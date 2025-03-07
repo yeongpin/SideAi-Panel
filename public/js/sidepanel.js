@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 system: '',
                 welcome: 'Hello! How can I help you today?'
             },
+            models: {
+                default: 'deepseek-r1:7b'
+            },
             ui: {
                 theme: {
                     default: 'system'
@@ -113,9 +116,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 elements.modelSelect.appendChild(option);
             });
 
-            // 選擇第一個模型作為默認值
-            if (elements.modelSelect.options.length > 0) {
-                elements.modelSelect.selectedIndex = 0;
+            // 使用已加载的配置中的默认模型
+            const defaultModel = config.models?.default || '';
+            
+            // 如果有默认模型且在列表中，则选择它
+            if (defaultModel && elements.modelSelect.querySelector(`option[value="${defaultModel}"]`)) {
+                elements.modelSelect.value = defaultModel;
+            } else {
+                // 否则选择第一个模型作为默认值
+                if (elements.modelSelect.options.length > 0) {
+                    elements.modelSelect.selectedIndex = 0;
+                }
             }
         } catch (error) {
             console.error('Error fetching models:', error);
@@ -789,6 +800,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('ollamaPort').value = settings.port || config.server.port;
         document.getElementById('systemPrompt').value = settings.systemPrompt || config.prompts.system;
         
+        // 加載默認模型設置
+        document.getElementById('defaultModel').value = settings.defaultModel || config.models.default;
+        
         // 加載 UI 設置
         document.getElementById('themeSelect').value = settings.theme || config.ui.theme.default;
         document.getElementById('textareaHeight').value = settings.textareaHeight || config.ui.maxHeight.textarea;
@@ -801,6 +815,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             host: document.getElementById('ollamaHost').value,
             port: document.getElementById('ollamaPort').value,
             systemPrompt: document.getElementById('systemPrompt').value,
+            defaultModel: document.getElementById('defaultModel').value,
             theme: document.getElementById('themeSelect').value,
             textareaHeight: parseInt(document.getElementById('textareaHeight').value),
             codeBlockHeight: parseInt(document.getElementById('codeBlockHeight').value)
@@ -811,6 +826,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 更新 OLLAMA_CONFIG
         OLLAMA_CONFIG.host = settings.host;
         OLLAMA_CONFIG.port = settings.port;
+        
+        // 更新默認模型
+        config.models.default = settings.defaultModel;
         
         // 應用 UI 設置
         applyUISettings(settings);
