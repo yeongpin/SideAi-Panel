@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "AI Chat Panel",
+  "version": "1.0",
+  "description": "A Chrome extension with AI chat side panel",
+  "permissions": [
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "http://192.168.5.54:11434/*"
+  ],
+  "action": {
+    "default_title": "Open Side Panel"
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "side_panel": {
+    "default_path": "./public/sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self' 'unsafe-eval' http://localhost:* http://127.0.0.1:* http://192.168.5.54:* http://192.168.5.182:* https://cors-anywhere.herokuapp.com https://api.groq.com https://html.duckduckgo.com https://generativelanguage.googleapis.com https://search.brave.com; connect-src 'self' http://localhost:* http://127.0.0.1:* http://192.168.5.54:* http://192.168.5.182:* https://cors-anywhere.herokuapp.com; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'unsafe-inline' 'self' data: https://upload.wikimedia.org https://via.placeholder.com https://placeholder.com;"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+I",
+        "mac": "Command+I"
+      },
+      "description": "Open AI Chat Panel"
+    }
+  }
+}
+

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Panel</title>
+    <!-- 改用 VS Code 暗色主題 -->
+    <link rel="stylesheet" href="external/vs2015.min.css">
+    <!-- 然後是我們的自定義樣式 -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- 加載所有必要的庫 -->
+    <script src="external/highlight.min.js"></script>
+    <script src="external/marked.min.js"></script>
+    <script src="external/purify.js"></script>
+    <!-- 添加 PDF.js 庫 -->
+    <script src="external/pdf.min.js"></script>
+    <script src="js/pdf-config.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- 主要內容區域 -->
+        <div class="main-content">
+            <div class="messages-container" id="messagesContainer">
+                <!-- Messages will be added here -->
+            </div>
+            <!-- 修改設置模態框 -->
+            <div id="settingsContainer" class="settings-container" style="display: none;">
+                <div class="settings-content">
+                    <div class="settings-header">
+                        <div class="settings-title">
+                            <h2>Settings</h2>
+                            <span class="settings-subtitle">General</span>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-tabs">
+                            <button class="tab-button active" data-tab="general" title="General">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                                </svg>
+                            </button>
+                            <button class="tab-button" data-tab="prompt" title="Prompt">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                </svg>
+                            </button>
+                            <button class="tab-button" data-tab="ui" title="UI Settings">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="9" y1="21" x2="9" y2="9"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="tab-content active" id="general">
+                            <div class="setting-item">
+                                <label for="ollamaHost">Ollama Host:</label>
+                                <input type="text" id="ollamaHost" placeholder="Enter host (e.g., localhost)">
+                            </div>
+                            <div class="setting-item">
+                                <label for="ollamaPort">Ollama Port:</label>
+                                <input type="text" id="ollamaPort" placeholder="Enter port (e.g., 11434)">
+                            </div>
+                        </div>
+                        <div class="tab-content" id="prompt">
+                            <div class="setting-item">
+                                <label for="systemPrompt">System Prompt:</label>
+                                <textarea id="systemPrompt" placeholder="Enter system prompt..." style="height: 120px"></textarea>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="ui">
+                            <div class="setting-item">
+                                <label for="themeSelect">Theme:</label>
+                                <select id="themeSelect" class="settings-select">
+                                    <option value="system">System</option>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="textareaHeight">Max Textarea Height:</label>
+                                <input type="number" id="textareaHeight" min="60" max="300" step="20">
+                            </div>
+                            <div class="setting-item">
+                                <label for="codeBlockHeight">Max Code Block Height:</label>
+                                <input type="number" id="codeBlockHeight" min="100" max="500" step="50">
+                            </div>
+                        </div>
+                        <div class="settings-actions">
+                            <button id="saveSettings" class="icon-button" title="Save Settings">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-container">
+                <div class="model-selector">
+                    <select id="modelSelect">
+                        <option value="">Loading models...</option>
+                    </select>
+                    <div class="chat-actions">
+                        <button id="newChatButton" class="icon-button" title="New Chat">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                        </button>
+                        <button id="historyButton" class="icon-button" title="Chat History">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <textarea 
+                        id="userInput"
+                        placeholder="Type your message here..."
+                        rows="1"
+                    ></textarea>
+                    <button id="sendButton">
+                        <svg viewBox="0 0 24 24" class="send-icon">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側垂直標籤欄 -->
+        <div class="vertical-header">
+            <div class="function-tabs">
+                <button class="header-tab active" data-mode="chat" title="Chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                </button>
+                <button class="header-tab" data-mode="translate" title="Translate">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+                    </svg>
+                </button>
+                <button class="header-tab" data-mode="pdforc" title="PDF/OCR">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <line x1="10" y1="9" x2="8" y2="9"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="settings-tabs-side">
+                <button id="webAccessButton" class="header-tab" title="Toggle Web Access">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        <path d="M2 12h20"/>
+                    </svg>
+                </button>
+                <button id="settingsButton" class="header-tab" title="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+                <button id="themeButton" class="header-tab" title="Toggle Theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 最後加載應用代碼 -->
+    <script type="module" src="js/sidepanel.js"></script>
+
+    <!-- 添加歷史記錄對話框 -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>History Chats</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="chatList" class="chat-list">
+                    <!-- 聊天記錄將在這裡動態添加 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html> 

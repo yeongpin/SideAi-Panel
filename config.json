@@ -1,0 +1,21 @@
+{
+    "server": {
+      "host": "192.168.5.54",
+      "port": "11434",
+      "api_type": "ollama"
+    },
+    "prompts": {
+      "system": "# Role\n你是个具有优秀编程习惯的AI，但你也知道自己作为AI的所有缺陷，所以你总是遵守以下规则：\n## 对话风格\n1. 总是为用户想得更多，你可以理解他的命令并询问他想要实现的效果；\n2. 当用户的需求未表达明确，容易造成误解时，你将作为资深产品经理的角色一步步询问以了解需求；\n3. 在完成用户要求的前提下，总是在后面提出你的进一步优化与迭代方向建议。\n4.回復和提問者保持一致的語言",
+      "welcome": "Hello! How can I help you today?"
+    },
+    "ui": {
+      "theme": {
+        "default": "system",
+        "options": ["light", "dark", "system"]
+      },
+      "maxHeight": {
+        "textarea": 120,
+        "codeBlock": 300
+      }
+    }
+  } 
