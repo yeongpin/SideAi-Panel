@@ -1016,8 +1016,8 @@ body {
 .translate-languages {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
 }
 
 .language-select {
@@ -1027,6 +1027,8 @@ body {
     background: var(--bg-color);
     color: var(--text-color);
     cursor: pointer;
+    flex: 1;
+    min-width: 120px;
 }
 
 .swap-button, .copy-button {
@@ -1233,4 +1235,10 @@ body {
     background: var(--code-bg);
     padding: 5px;
     cursor: text;
+}
+
+@media (max-width: 480px) {
+    .translate-languages {
+        gap: 4px;
+    }
 }
